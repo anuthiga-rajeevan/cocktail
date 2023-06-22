@@ -1,37 +1,43 @@
 import * as React from 'react';
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import CssBaseline from '@mui/material/CssBaseline';
-import { Menu, MenuItem, Typography } from '@mui/material';
+import { AppBar, InputAdornment, TextField, Toolbar, Typography } from '@mui/material';
+import { Search } from '@mui/icons-material';
+
+import useStyles from './Header.styles';
+import { useDarkMode } from '../../hooks/useDarkMode';
+import { lightTheme, darkTheme } from '../../Themes';
+import Theme from '../theme/Theme';
 
 export default function Header() {
-    return (
-        <p>Header</p>
-        // <Box>
-        //     <CssBaseline />
-        //     <AppBar component="nav">
-        //     <Menu
-        //       id="menu-appbar"
-        // open={true}
-        //       anchorOrigin={{
-        //         vertical: 'bottom',
-        //         horizontal: 'left',
-        //       }}
-        //       keepMounted
-        //       transformOrigin={{
-        //         vertical: 'top',
-        //         horizontal: 'left',
-        //       }}
-  
+  const classes = useStyles();
+  const [theme, themeToggler] = useDarkMode<string>();
 
-        //     >
-              
-        //         <MenuItem >
-        //           <Typography textAlign="center">Home</Typography>
-        //         </MenuItem>
-              
-        //     </Menu>
-        //     </AppBar>
-        // </Box>
-    );
+  const themeMode = theme === 'light' ? lightTheme : darkTheme;
+  return (
+    <AppBar>
+      <Toolbar>
+        <Theme theme={theme} toggleTheme={themeToggler} />
+        <TextField
+          id='search'
+          placeholder='Search'
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position='start'>
+                <Search />
+              </InputAdornment>
+            ),
+          }}
+          variant='standard'
+          className={classes.textbox}
+        />
+        <div className={classes.menuDiv}>
+          <Typography variant='h6' className={classes.typography}>
+            Home
+          </Typography>
+          <Typography variant='h6' className={classes.typography}>
+            Favourites
+          </Typography>
+        </div>
+      </Toolbar>
+    </AppBar>
+  );
 }

@@ -1,23 +1,21 @@
 import React from 'react';
-import { BrowserRouter, Routes as DomRoutes } from 'react-router-dom';
+import { BrowserRouter as Router } from 'react-router-dom';
+import { ThemeProvider } from 'styled-components';
 
-import Routes from './routes';
 import Header from './components/header/Header';
+import { GlobalStyles } from './GlobalStyles';
+import { lightTheme, darkTheme } from './Themes';
+import Routes from './routes';
 
 function App() {
   return (
-    <>
-
-      <BrowserRouter >
+    <ThemeProvider theme={theme === 'light' ? lightTheme : darkTheme}>
+      <GlobalStyles />
+      <Router>
         <Header />
-        <DomRoutes>
-          <Routes />
-        </DomRoutes>
-      </BrowserRouter >
-    </>
-
-
-
+        <Routes />
+      </Router>
+    </ThemeProvider>
   );
 }
 
