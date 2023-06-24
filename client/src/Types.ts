@@ -4,3 +4,8 @@ export enum LoadingStatus {
   success = 'success',
   failed = 'failed',
 }
+
+export enum Theme {
+  dark = 'dark',
+  light = 'light',
+}
