@@ -9,3 +9,9 @@ export enum Theme {
   dark = 'dark',
   light = 'light',
 }
+
+export interface ThemeProps {
+  body: string;
+  text: string;
+  header: string;
+}

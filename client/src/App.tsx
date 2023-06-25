@@ -3,7 +3,7 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import { ThemeProvider } from 'styled-components';
 
 import Header from './components/header/Header';
-import { GlobalStyles } from './GlobalStyles';
+import GlobalStyles from './GlobalStyles';
 import { lightTheme, darkTheme } from './Themes';
 import Routes from './routes';
 import { RootState } from './store';
