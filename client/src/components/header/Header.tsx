@@ -6,7 +6,7 @@ import Search from '../search/Search';
 
 export default function Header() {
   return (
-    <StyledNavBar>
+    <StyledNavBar elevation={5}>
       <SearchDiv ><Search /></SearchDiv>
       <MenuDiv>
         <StyledNavLink to='/' >
@@ -16,7 +16,7 @@ export default function Header() {
           Favourites
         </StyledNavLink>
       </MenuDiv>
-      <div className='theme'><Theme /></div>
+      <div><Theme /></div>
       
     </StyledNavBar>
   );

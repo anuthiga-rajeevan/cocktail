@@ -6,15 +6,18 @@ import {
     searchCocktailByName as searchCocktailByNameService,
     listCocktailByFirstLetter as listCocktailByFirstLetterService,
     getRandomCocktail as getRandomCocktailService,
+    filterCocktail as filterCocktailService
 } from '../services/cocktail.service';
 
 // Types
 interface CocktailState {
+    isSearch: boolean;
     cocktails: Cocktail[];
     getCocktailStatus: LoadingStatus;
 }
 
 const initialState: CocktailState = {
+    isSearch: false,
     cocktails: [],
     getCocktailStatus: LoadingStatus.idle,
 };
@@ -48,15 +51,28 @@ export const listCocktailByFirstLetter = createAsyncThunk(
 
 export const getRandomCocktail = createAsyncThunk(
     'cocktail/getRandomCocktail',
-    async ( _: undefined, { rejectWithValue }) => {
+    async (_: undefined, { rejectWithValue }) => {
         try {
             const requests = [];
-            for (let i=0; i<5; i++) {                
+            for (let i = 0; i < 5; i++) {
                 requests.push(getRandomCocktailService())
             }
             const responses = await Promise.all(requests);
             const response = responses.map((res) => res[0])
             return response;
+        } catch (err: any) {
+            const error = err.response?.data?.error || 'Something went wrong';
+            return rejectWithValue(error);
+        }
+    },
+);
+
+export const filterCocktail = createAsyncThunk(
+    'cocktail/filterCocktail',
+    async (param: {}, { rejectWithValue }) => {
+        try {
+            const cocktails = await filterCocktailService(param);
+            return cocktails;
         } catch (err: any) {
             const error = err.response?.data?.error || 'Something went wrong';
             return rejectWithValue(error);
@@ -70,15 +86,30 @@ const cocktailSlice = createSlice({
     initialState,
     reducers: {},
     extraReducers: (builder) => {
-        builder
-            .addMatcher(isAnyOf(searchCocktailByName.fulfilled, listCocktailByFirstLetter.fulfilled, getRandomCocktail.fulfilled), (state, action) => {
+        builder.addCase(searchCocktailByName.fulfilled, (state, action) => {
+            state.getCocktailStatus = LoadingStatus.success;
+            state.cocktails = action.payload;
+            state.isSearch = true;
+        }).addCase(searchCocktailByName.pending, (state) => {
+            state.getCocktailStatus = LoadingStatus.loading;
+            state.isSearch = false;
+            state.cocktails = [];
+        }).addCase(searchCocktailByName.rejected, (state) => {
+            state.getCocktailStatus = LoadingStatus.failed;
+            state.cocktails = [];
+        })
+            .addMatcher(isAnyOf(listCocktailByFirstLetter.fulfilled, getRandomCocktail.fulfilled, filterCocktail.fulfilled), (state, action) => {
                 state.getCocktailStatus = LoadingStatus.success;
                 state.cocktails = action.payload;
-            }).addMatcher(isAnyOf(searchCocktailByName.pending, listCocktailByFirstLetter.pending, getRandomCocktail.pending), (state) => {
+                state.isSearch = false;
+            }).addMatcher(isAnyOf(listCocktailByFirstLetter.pending, getRandomCocktail.pending, filterCocktail.pending), (state) => {
                 state.getCocktailStatus = LoadingStatus.loading;
-            }).addMatcher(isAnyOf(searchCocktailByName.rejected, listCocktailByFirstLetter.rejected, getRandomCocktail.rejected), (state) => {
+                state.cocktails = [];
+                state.isSearch = false;
+            }).addMatcher(isAnyOf(listCocktailByFirstLetter.rejected, getRandomCocktail.rejected, filterCocktail.rejected), (state) => {
                 state.getCocktailStatus = LoadingStatus.failed;
                 state.cocktails = [];
+                state.isSearch = false;
             })
     },
 });

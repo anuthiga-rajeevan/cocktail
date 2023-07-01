@@ -1,27 +1,38 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import RefreshIcon from '@mui/icons-material/Refresh';
 import { AppDispatch, RootState } from '../../store';
-import { getRandomCocktail } from '../../store/cocktail';
+import Filter from '../../components/filter/Filter';
+import Cocktail from '../../components/cocktail/Cocktail';
+import { BaseDiv, CocktailDiv, FilterDiv, RefreshDiv, StyledButton } from './Home.styles';
 import { LoadingStatus } from '../../Types';
-import { CircularProgress } from '@mui/material';
+import { getRandomCocktail } from '../../store/cocktail.store';
 
 function Home() {
   const dispatch = useDispatch<AppDispatch>();
-  const cocktails = useSelector((state: RootState) => state.cocktail.cocktails);
   const getCocktailStatus = useSelector((state: RootState) => state.cocktail.getCocktailStatus);
-  console.log(getCocktailStatus)
 
   useEffect(() => {
     if (getCocktailStatus === LoadingStatus.idle) {
       dispatch(getRandomCocktail());
     }
-  }, [dispatch, getCocktailStatus]
-  );
+  }, [dispatch, getCocktailStatus]);
 
-  if (getCocktailStatus === LoadingStatus.loading) {
-    return <CircularProgress />;
+  const reloadCocktails = () => {
+    dispatch(getRandomCocktail());
   }
-  return <div>{JSON.stringify(cocktails)}</div>;
+
+  return <BaseDiv>
+    <FilterDiv><Filter /></FilterDiv>
+    <CocktailDiv>
+      <RefreshDiv>
+        <StyledButton onClick={reloadCocktails}>
+          <RefreshIcon />
+        </StyledButton>
+      </RefreshDiv>
+      <Cocktail />
+    </CocktailDiv>
+  </BaseDiv>
 }
 
 export default Home;

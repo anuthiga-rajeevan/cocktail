@@ -2,7 +2,7 @@ import { blueGrey } from "@mui/material/colors";
 
 export const getSpacing = function getSpacing(space: number) {
   return `${space * 0.4}rem`;
-}; 
+};
 
 export const sizes = {
   none: 0,
@@ -21,17 +21,33 @@ export const defaultTheme = {
   getSpacing: (value: number) => getSpacing(value)
 }
 
-export const lightTheme = {
-  body: blueGrey[50],
-  text: blueGrey[700],
-  header: blueGrey[100],
-  activeLink: blueGrey[900],
+export const darkTheme = {
+  colors: {
+    1: blueGrey[50],
+    2: blueGrey[100],
+    3: blueGrey[200],
+    4: blueGrey[300],
+    5: blueGrey[400],
+    6: blueGrey[500],
+    7: blueGrey[600],
+    8: blueGrey[700],
+    9: blueGrey[800],
+    10: blueGrey[900],
+  },
   ...defaultTheme
 };
-export const darkTheme = {
-  body: blueGrey[900],
-  text: blueGrey[300],
-  header: blueGrey[800],
-  activeLink: blueGrey[50],
+export const lightTheme = {
+  colors: {
+    1: blueGrey[900],
+    2: blueGrey[800],
+    3: blueGrey[700],
+    4: blueGrey[600],
+    5: blueGrey[500],
+    6: blueGrey[400],
+    7: blueGrey[300],
+    8: blueGrey[200],
+    9: blueGrey[100],
+    10: blueGrey[50],
+  },
   ...defaultTheme
 };

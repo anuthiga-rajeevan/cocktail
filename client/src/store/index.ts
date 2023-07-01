@@ -2,12 +2,14 @@ import { configureStore } from '@reduxjs/toolkit';
 import { useDispatch } from 'react-redux';
 
 import themeReducer from './theme';
-import cocktailReducer from './cocktail';
+import cocktailReducer from './cocktail.store';
+import filterReducer from './filter.store';
 
 const store = configureStore({
   reducer: {
     theme: themeReducer,
     cocktail: cocktailReducer,
+    filter: filterReducer,
   },
 });
 

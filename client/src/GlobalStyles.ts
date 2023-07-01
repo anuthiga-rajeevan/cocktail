@@ -7,8 +7,8 @@ type GlobalThemeProps = {
 
 const GlobalStyles = createGlobalStyle`
   body {
-    background: ${({ theme }: GlobalThemeProps) => theme?.body};
-    color: ${({ theme }: GlobalThemeProps) => theme?.text};
+    background: ${({ theme }: GlobalThemeProps) => theme?.colors?.[10]};
+    color: ${({ theme }: GlobalThemeProps) => theme?.colors?.[1]};
     font-family: Tahoma, Helvetica, Arial, Roboto, sans-serif;
   }`;
 
