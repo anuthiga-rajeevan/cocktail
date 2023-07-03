@@ -9,11 +9,15 @@ import {
 
 // Types
 interface CocktailState {
+    filterKey: string;
+    filterValue: string;
     filters: FilterResponse;
     getFilterStatus: LoadingStatus;
 }
 
 const initialState: CocktailState = {
+    filterKey: '',
+    filterValue: '',
     filters: {
         alcohols: [],
         ingrediants: [],
@@ -47,7 +51,14 @@ export const getFilters = createAsyncThunk(
 const filterSlice = createSlice({
     name: 'filter',
     initialState,
-    reducers: {},
+    reducers: {
+        setFilterKey(state, action) {
+            state.filterKey = action.payload;
+        },
+        setFilterValue(state, action) {
+            state.filterValue = action.payload;
+        },
+    },
     extraReducers: (builder) => {
         builder
             .addCase(getFilters.fulfilled, (state, action) => {
@@ -61,4 +72,5 @@ const filterSlice = createSlice({
     },
 });
 
+export const { setFilterKey, setFilterValue } = filterSlice.actions;
 export default filterSlice.reducer;

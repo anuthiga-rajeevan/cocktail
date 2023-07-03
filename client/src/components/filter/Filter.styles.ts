@@ -6,6 +6,7 @@ export const StyledSideBar = styled(Card)`
         background: ${({ theme }: { theme?: any }) => theme?.colors?.[8]};
         height: ${({ theme }: { theme?: any }) => theme.getSpacing(80)};
         overflow-y: scroll;
+        display: block;
     }`;
 
 export const HeadingDiv = styled.div`

@@ -8,16 +8,21 @@ import {
     getRandomCocktail as getRandomCocktailService,
     filterCocktail as filterCocktailService
 } from '../services/cocktail.service';
+import { setFilterKey, setFilterValue } from './filter.store';
 
 // Types
 interface CocktailState {
+    isFilter: boolean;
     isSearch: boolean;
+    searchText: string | undefined;
     cocktails: Cocktail[];
     getCocktailStatus: LoadingStatus;
 }
 
 const initialState: CocktailState = {
+    isFilter: false,
     isSearch: false,
+    searchText: undefined,
     cocktails: [],
     getCocktailStatus: LoadingStatus.idle,
 };
@@ -25,7 +30,9 @@ const initialState: CocktailState = {
 // Action Creators
 export const searchCocktailByName = createAsyncThunk(
     'cocktail/searchCocktailByName',
-    async (cocktailName: string, { rejectWithValue }) => {
+    async (cocktailName: string, { dispatch, rejectWithValue }) => {
+        dispatch(setFilterKey(''));
+        dispatch(setFilterValue(''));
         try {
             const cocktails = await searchCocktailByNameService(cocktailName);
             return cocktails;
@@ -51,7 +58,9 @@ export const listCocktailByFirstLetter = createAsyncThunk(
 
 export const getRandomCocktail = createAsyncThunk(
     'cocktail/getRandomCocktail',
-    async (_: undefined, { rejectWithValue }) => {
+    async (_: undefined, { dispatch, rejectWithValue }) => {
+        dispatch(setFilterKey(''));
+        dispatch(setFilterValue(''));
         try {
             const requests = [];
             for (let i = 0; i < 5; i++) {
@@ -84,34 +93,64 @@ export const filterCocktail = createAsyncThunk(
 const cocktailSlice = createSlice({
     name: 'cocktail',
     initialState,
-    reducers: {},
+    reducers: {
+        setSearchText(state, action) {
+            state.searchText = action.payload;
+        },
+    },
     extraReducers: (builder) => {
         builder.addCase(searchCocktailByName.fulfilled, (state, action) => {
             state.getCocktailStatus = LoadingStatus.success;
             state.cocktails = action.payload;
             state.isSearch = true;
+            state.isFilter = false;
         }).addCase(searchCocktailByName.pending, (state) => {
             state.getCocktailStatus = LoadingStatus.loading;
-            state.isSearch = false;
+            state.isSearch = true;
+            state.isFilter = false;
             state.cocktails = [];
         }).addCase(searchCocktailByName.rejected, (state) => {
             state.getCocktailStatus = LoadingStatus.failed;
+            state.isSearch = true;
+            state.isFilter = false;
+            state.cocktails = [];
+        }).addCase(getRandomCocktail.fulfilled, (state, action) => {
+            state.getCocktailStatus = LoadingStatus.success;
+            state.cocktails = action.payload;
+            state.isSearch = false;
+            state.isFilter = false;
+        }).addCase(getRandomCocktail.pending, (state) => {
+            state.getCocktailStatus = LoadingStatus.loading;
+            state.isSearch = false;
+            state.isFilter = false;
+            state.cocktails = [];
+        }).addCase(getRandomCocktail.rejected, (state) => {
+            state.getCocktailStatus = LoadingStatus.failed;
+            state.isSearch = false;
+            state.isFilter = false;
             state.cocktails = [];
         })
-            .addMatcher(isAnyOf(listCocktailByFirstLetter.fulfilled, getRandomCocktail.fulfilled, filterCocktail.fulfilled), (state, action) => {
+            .addMatcher(isAnyOf(listCocktailByFirstLetter.fulfilled, filterCocktail.fulfilled), (state, action) => {
                 state.getCocktailStatus = LoadingStatus.success;
                 state.cocktails = action.payload;
                 state.isSearch = false;
-            }).addMatcher(isAnyOf(listCocktailByFirstLetter.pending, getRandomCocktail.pending, filterCocktail.pending), (state) => {
+                state.isFilter = true;
+                state.searchText = undefined;
+            }).addMatcher(isAnyOf(listCocktailByFirstLetter.pending, filterCocktail.pending), (state) => {
                 state.getCocktailStatus = LoadingStatus.loading;
                 state.cocktails = [];
                 state.isSearch = false;
-            }).addMatcher(isAnyOf(listCocktailByFirstLetter.rejected, getRandomCocktail.rejected, filterCocktail.rejected), (state) => {
+                state.isFilter = true;
+                state.searchText = undefined;
+            }).addMatcher(isAnyOf(listCocktailByFirstLetter.rejected, filterCocktail.rejected), (state) => {
                 state.getCocktailStatus = LoadingStatus.failed;
                 state.cocktails = [];
                 state.isSearch = false;
+                state.isFilter = true;
+                state.searchText = undefined;
             })
     },
 });
 
+export const { setSearchText } = cocktailSlice.actions;
 export default cocktailSlice.reducer;

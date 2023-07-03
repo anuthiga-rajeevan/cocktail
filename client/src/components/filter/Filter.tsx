@@ -1,20 +1,20 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { ArrowDropUp, ArrowDropDown } from '@mui/icons-material';
 
 import { LoadingStatus } from '../../Types';
 import { AppDispatch, RootState } from '../../store';
-import { getFilters } from '../../store/filter.store';
+import { getFilters, setFilterKey, setFilterValue } from '../../store/filter.store';
 import { filterCocktail, listCocktailByFirstLetter } from '../../store/cocktail.store';
 import { AlphabetBodyDiv, BodyDiv, HeadingDiv, StyledArrowDiv, StyledHeadingTypography, StyledListSelectedTypography, StyledListTypography, StyledSideBar } from './Filter.styles';
-import { StyledProgressBar } from '../progressBar/ProgressBar.styles';
+import ProgressBar from '../progressBar/ProgressBar';
 
 export default function Filter() {
     const dispatch = useDispatch<AppDispatch>();
     const filters = useSelector((state: RootState) => state.filter.filters);
     const getFilterStatus = useSelector((state: RootState) => state.filter.getFilterStatus);
-    const [filterKey, setFilterKey] = useState<string>('');
-    const [filterValue, setFilterValue] = useState<string | undefined>(undefined);
+    const filterKey = useSelector((state: RootState) => state.filter.filterKey);
+    const filterValue = useSelector((state: RootState) => state.filter.filterValue);
 
     const filterKeyMapping: { [key: string]: string } = {
         alcohols: 'a',
@@ -32,14 +32,14 @@ export default function Filter() {
 
     const handleShowFilter = (key: string) => {
         if (key === filterKey) {
-            setFilterKey('');
+            dispatch(setFilterKey(''));
         } else {
-            setFilterKey(key);
+            dispatch(setFilterKey(key));
         }
     }
 
     const handleFilter = (filterValue: string | undefined) => {
-        setFilterValue(filterValue);
+        dispatch(setFilterValue(filterValue));
         if (filterKey === 'alphabets') {
             dispatch(listCocktailByFirstLetter(filterValue || ''))
         } else {
@@ -48,7 +48,7 @@ export default function Filter() {
     }
 
     return <StyledSideBar elevation={5}>
-        {getFilterStatus === LoadingStatus.loading ? <StyledProgressBar/> : 
+        {getFilterStatus === LoadingStatus.loading ? <ProgressBar/> : 
         Object.keys(filters).map((key: string) => {
             return <div key={key}>
                 <HeadingDiv onClick={() => handleShowFilter(key)}>
